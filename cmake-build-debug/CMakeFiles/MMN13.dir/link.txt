@@ -1,0 +1,1 @@
+/usr/bin/cc -g  -Wl,--enable-auto-import CMakeFiles/MMN13.dir/d_heap.c.o  -o MMN13.exe -Wl,--out-implib,libMMN13.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
