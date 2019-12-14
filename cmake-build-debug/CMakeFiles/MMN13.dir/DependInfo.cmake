@@ -4,9 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "C:/Users/tms1/CLionProjects/MMN13/d_heap.c" "C:/Users/tms1/CLionProjects/MMN13/cmake-build-debug/CMakeFiles/mmn13.dir/d_heap.c.obj"
+  "/cygdrive/c/Users/tms1/CLionProjects/MMN13/d_heap.c" "/cygdrive/c/Users/tms1/CLionProjects/MMN13/cmake-build-debug/CMakeFiles/mmn13.dir/d_heap.c.o"
   )
-set(CMAKE_C_COMPILER_ID "MSVC")
+set(CMAKE_C_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH

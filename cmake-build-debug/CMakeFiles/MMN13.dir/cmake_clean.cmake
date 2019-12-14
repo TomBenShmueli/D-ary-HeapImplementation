@@ -1,8 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/mmn13.dir/d_heap.c.obj"
+  "CMakeFiles/mmn13.dir/d_heap.c.o"
+  "libmmn13.dll.a"
   "mmn13.exe"
-  "mmn13.exe.manifest"
-  "mmn13.lib"
   "mmn13.pdb"
 )
 
