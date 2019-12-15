@@ -21,8 +21,8 @@
 #define HEAP_UNDERFLOW INT_MIN
 #define MAX_PATH_SIZE 500
 #define MAX_ALLOWED_SIZE 1000
-#define FATHER(i,d) (i-d)/d //get father macro - support for all d values.
-#define SON(i,k,d) d*i+k+1 //get son macro - support for all d values.
+#define FATHER(i,d) (i-1)/d //get father macro - support for all d values.
+#define SON(i,k,d) (3 * i + k + 1) //get son macro - support for all d values.
 
 typedef struct Heap {
     int * array; // numbers the heap stores
@@ -55,20 +55,18 @@ void heapify(dheap *heapnode,int i)
     for(int index = 0 ; index < heapnode->d ; index++) // loop through all the node's child and compare to the assumed largest element
     {
         son = SON(i,index,(heapnode->d)); //get the indexTH son
-        if(son < heapnode->n && heapnode->array[son] >= heapnode->array[largest]) //evaluate the value and switch if necessary
+        if(son < heapnode->n && heapnode->array[son] > heapnode->array[largest]) //evaluate the value and switch if necessary
             {
-                //swap(&heapnode->array[index],&heapnode->array[largest]);
                 largest = son;
             }
-        if (largest != i) //swap son and root
-        {
-            swap(&heapnode->array[i],&heapnode->array[largest]);
-            printf("Array after heapify from largest = %d\n",largest);
-            printArray(heapnode);
-            printf("\n");
-            heapify(heapnode,largest);
-        }
-
+    }
+    if (largest != i) //swap son and root
+    {
+        swap(&heapnode->array[i],&heapnode->array[largest]);
+        printf("Array after heapify from largest = %d\n",largest);
+        printArray(heapnode);
+        printf("\n");
+        heapify(heapnode,largest);
     }
 
 }
@@ -83,9 +81,8 @@ int extractMax(dheap *heapnode)
             printf("Error: Heap underflow.");
             return HEAP_UNDERFLOW;
         }
-
     max = heapnode->array[0]; //get max element & extract it from the heap
-    heapnode->array[0] = heapnode->array[heapnode->n];
+    heapnode->array[0] = heapnode->array[heapnode->n - 1];
     (heapnode->n)--;
     heapify(heapnode,1); //fix heap
     return max;
@@ -202,6 +199,15 @@ printArray(&dheap);
 heapify(&dheap,0);
 printf("\n");
 printArray(&dheap);
+
+int max = extractMax(&dheap);
+printf("extractMax: %d \n",max);
+    heapify(&dheap,0);
+    printArray(&dheap);
+max = extractMax(&dheap);
+    printf("extractMax: %d \n",max);
+    heapify(&dheap,0);
+    printArray(&dheap);
 
 
 }
