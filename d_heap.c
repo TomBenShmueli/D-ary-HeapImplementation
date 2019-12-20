@@ -19,15 +19,13 @@
  */
 
 #define HEAP_UNDERFLOW INT_MIN
-#define MEM_ALLOC_ERROR INT_MIN
 #define MAX_PATH_SIZE 500
-#define FATHER(i,d) (i-d)/d //get father macro - support for all d values.
-#define SON(i,k,d) d*(i-1)+k+1 //get son macro - support for all d values.
+#define MAX_ALLOWED_SIZE 1000
+#define FATHER(i,d) (i-1)/d //get father macro - support for all d values.
+#define SON(i,k,d) (d*i + k) + 1 //get son macro - support for all d values.
 
-typedef enum {false,true} bool;
-
-typedef struct heap {
-    int * array; // numbers the heap stores
+typedef struct Heap {
+    int *array; // numbers the heap stores
     int d; // number of sons per node
     int n; // heap size
 } dheap; // heap data structure definition
@@ -35,76 +33,62 @@ typedef struct heap {
 
 
 //declarations
-void heapify(dheap *heapnode ,int i); //max heapify for d sons.
-int extractMax(dheap *heapnode); //extract max.
-void insert(dheap *heapnode ,int newValue); //insert a node to the heap.
-void increaseKey(dheap *heapnode, int i, int newValue); //add a positive addition to a heap element value.
-void decreaseKey(dheap *heapnode, int i, int newValue); //add a negative addition to a heap element value.
-void removeNode(dheap *heapnode, int i); //removes a node from the heap.
-void printArray(dheap *heapnode); // general purpose print array function.
+void heapify(int *array, int n ,int d ,int i); //max heapify for d sons.
+int extractMax(int *array, int n ,int d); //extract max.
+void insert(int *array, int n ,int d ,int newValue); //insert a node to the heap.
+void increaseKey(int *array, int n ,int d, int i, int newValue); //add a positive addition to a heap element value.
+void removeNode(int *array, int n ,int d, int i); //removes a node from the heap.
+void printArray(int *array, int n ,int d); // general purpose print array function.
+void swap(int *a, int *b); //swaps two integers
 
 
-//************************implementations**************************
+//************************implementations**************************//
 
 //max-heapify as given on chapter 6.2 on CLRS (page 109 on the openU edition), adapted to handle d sons.
-//runtime is Theta of log(d,n)
-void heapify(dheap *heapnode,int i)
+//runtime is Theta of d*log(d,n)
+void heapify(int *array, int n ,int d,int i)
 {
     int largest = i; //variables
     int son = -1;
-    int swapHelper = -1;
 
-    for(int index = 0 ; index < heapnode->d ; index++) // loop through all the node's child and compare to the assumed largest element
+    for(int index = 0 ; index < d ; index++) // loop through all the node's child and compare to the assumed largest element
     {
-        son = SON(i,index,(heapnode->d)); //get the indexTH son
-        if(son < heapnode->n && heapnode->array[index] >= heapnode->array[largest]) //evaluate the value and switch if necessary
-            largest = son;
+        son = SON(i,index,d); //get the indexTH son
+        if(son < n && array[son] > array[i]) //evaluate the value and switch if necessary
+        {
+                largest = son;
+        }
     }
+
     if (largest != i) //swap son and root
     {
-        swapHelper = heapnode->array[i];
-        heapnode->array[i] = heapnode->array[largest];
-        heapnode->array[largest] = swapHelper;
-        heapify(heapnode,largest);
+        swap(&(array[i]), &(array[largest]));
+        printf("Swapped %d,%d\n",array[i],array[largest]);
+        heapify(&array, n,d ,largest);
     }
 }
-
+/*
 //extract-max as given on chapter 6.2 on CLS (page 109 on the openU edition)
-//runtime is Theta of log(d,n) + 4 = Theta of log(d,n)
-int extractMax(dheap *heapnode)
+//runtime is Theta of d*log(d,n) + 4 = Theta of d*log(d,n)
+int extractMax(int *array, int n ,int d)
 {
     int max = -1;
-    int *intptr = realloc(heapnode->array,(heapnode->n) -1); // try to remove one element.
-    if(intptr == NULL)
-        {
-            printf("Memory allocation error. Cannot add more elements to the heap.");
-            return MEM_ALLOC_ERROR;
-        }
     if (heapnode->n < 1)
-        {
-            printf("Error: Heap underflow.");
-            return HEAP_UNDERFLOW;
-        }
-
+    {
+        printf("Error: Heap underflow.");
+        return HEAP_UNDERFLOW;
+    }
     max = heapnode->array[0]; //get max element & extract it from the heap
-    heapnode->array[0] = heapnode->array[heapnode->n];
+    heapnode->array[0] = heapnode->array[heapnode->n - 1];
     (heapnode->n)--;
-    *heapnode->array = *intptr; //get new memory block and use it.
     heapify(heapnode,1); //fix heap
     return max;
 }
 
 //insert a new node to the heap
 //runtime is the same as increaseKey function runtime. Theta log(d,n) + Theta(1) = Theta log(d,n)
-void insert(dheap *heapnode ,int newValue)
+void insert(int *array, int n ,int d,int newValue)
 {
-    int *intptr = realloc(heapnode->array,sizeof(int)*1); // try to add one element.
-    if(intptr == NULL)
-    {
-        printf("Memory allocation error. Cannot add more elements to the heap.");
-        return;
-    }
-    *heapnode->array = *intptr; //get new memory block and use it.
     (heapnode->n)++;
     heapnode->array[heapnode->n] = INT_MIN;
     increaseKey(heapnode,heapnode->n,newValue);
@@ -112,9 +96,8 @@ void insert(dheap *heapnode ,int newValue)
 
 // increase a node's value and place it in the correct location
 // iteration is made through the heaps floors, therefore the runtime is Theta of log(d,n)
-void increaseKey(dheap *heapnode, int i ,int newValue)
+void increaseKey(int *array, int n ,int d, int i ,int newValue)
 {
-    int swapHelper = -1;
     if (newValue <= heapnode->array[i]) //check new desired key value
     {
         printf("Error: new value is lower or equal to the current key value. Please use DECREASEKEY for this operation.");
@@ -123,25 +106,39 @@ void increaseKey(dheap *heapnode, int i ,int newValue)
     heapnode->array[i] = newValue;
     while( i > 1 && heapnode->array[FATHER(i,heapnode->d)] < heapnode->array[i]) //loop through the heap's floors
     {
-        swapHelper = heapnode->array[FATHER(i,heapnode->d)]; //swap values
-        heapnode->array[FATHER(i,heapnode->d)] = heapnode->array[i];
-        heapnode->array[i] = swapHelper;
+        swap( &(heapnode->array[FATHER(i,heapnode->d)]), &(heapnode->array[i]) );
         i = FATHER(i,heapnode->d); //update index
     }
 }
 
-void removeNode(dheap *heapnode, int i)
+// removes a node from the heap
+// runtime is identical to heapify, Theta of log(d,n
+void removeNode(int *array, int n ,int d, int i)
 {
-
+    heapnode->array[i] = heapnode->array[heapnode->n]; //overwrite the removed element and decrease heap size by one
+    (heapnode->n)--;
+    heapify(heapnode,0); //fix heap
+}
+*/
+//prints the array to the console
+void printArray(int *array, int n ,int d)
+{
+    for (int i = 0 ; i < n ;i++)
+    {
+        printf("%d ",array[i]);
+    }
+    printf("\n");
 }
 
-void printArray(dheap *heapnode)
-{
-   for (int i = 0 ; i < heapnode->n ;i++)
-   {
-       printf("%d ",heapnode->array[i]);
-   }
+//self explanatory swap function for two integers
+void swap(int *a, int *b) {
+    int tmp;
+    tmp = *a;
+    *a=*b;
+    *b=tmp;
 }
+
+//********************************MAIN***************************************//
 
 /*
  * Driver function
@@ -152,16 +149,15 @@ int main()
     int currentChar = 0; //file pointer
     int length = 0; //array len var for malloc
     int index = 0; // iteration variable
-    int *dheap; // array pointer
 
     char *path[MAX_PATH_SIZE]; //pointers
     FILE *filePointer;
-    while(true)
+    while(1)
     {
         printf("Enter the number of sons per node (bigger than 2):\n");
         scanf("%d", &d);
-            if (d >= 2)
-                break;
+        if (d >= 2)
+            break;
     }
 /*
     printf("Enter the text file path containing the array:"); //read from file
@@ -193,8 +189,15 @@ int main()
     }
     */
 
-int inputArr[] = {1,6,7,3,4,5,22,34,11,9,2,3,10};
-int size = sizeof(inputArr)/ sizeof(inputArr[0]);
+    int inputArr[] = {1,6,7,3,4,5,22,34,11,9,2,3,10,8,31,4}; //16
+    int n = 16;
+    length = sizeof(inputArr)/sizeof(inputArr[0]);
 
+    struct Heap dheap = {inputArr,d,16}; //initialize a d-ary heap
+    printArray(inputArr , 16, d );
+    for (int j = 0 ; j < n/2 ; j++) {
+        heapify(inputArr, n,d,j);
+        printArray(inputArr,n,d);
+    }
 
 }
