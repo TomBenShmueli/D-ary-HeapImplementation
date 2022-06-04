@@ -11,11 +11,6 @@
  *      CHILD2's children will be found at CHILDd+d+1 to CHILDd+d+d indexes.
  *      Generalizing this pattern allows us to understand the positioning of the child nodes:
  *      For an array member k, 1 <= k < floor(n/2), the children of A[k] will be found at d*k to (d*k+d) -1.
- *
- *
- *
- *
- *
  */
 
 #define HEAP_UNDERFLOW INT_MIN
