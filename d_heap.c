@@ -161,35 +161,6 @@ int main()
             if (d >= 2)
                 break;
     }
-/*
-    printf("Enter the text file path containing the array:"); //read from file
-    scanf("%s",path);
-    filePointer = fopen(path,"r");
-    if (filePointer != NULL) //file not null
-    {
-        while((currentChar = getc(filePointer)) != EOF) //count elements for dynamic allocation
-        {
-            if (currentChar > 47 && currentChar < 58)
-                length++;
-        }
-
-        dheap = malloc(sizeof(int)*length);
-        if(dheap == NULL) // memory allocation check
-        {
-            printf("Runtime error found: Memory allocation error.");
-            exit(EXIT_FAILURE);
-        }
-
-        fseek(filePointer,0,SEEK_SET); //set pointer
-
-        while((currentChar = getc(filePointer)) != EOF) //fill array with values
-        {
-            if (currentChar > 47 && currentChar < 58)
-                dheap[index] = currentChar;
-            index++;
-        }
-    }
-    */
 
 int inputArr[] = {1,6,7,3,4,5,22,34,11,9,2,3,10,8,31}; //15
 length = sizeof(inputArr)/sizeof(inputArr[0]);
